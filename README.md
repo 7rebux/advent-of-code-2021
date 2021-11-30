@@ -1,5 +1,7 @@
 # 🎄 [Advent Of Code 2021](https://adventofcode.com/2021)
 
+[![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=flat&logo=Kotlin)](aoc-kotlin)
+
 ### Daily Solution Index
 | Day | Title | Language |
 | --- | --- | --- |

@@ -11,7 +11,8 @@ class AllDaysTest {
 
     @TestFactory
     fun answers() = listOf(
-        Answer({ Day01() }, 1215, 1150)
+        Answer({ Day01() }, 1215, 1150),
+        Answer({ Day02() }, 1636725, 1872757425)
     ).map {
         val day = it.instance()
 

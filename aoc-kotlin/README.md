@@ -4,3 +4,4 @@
 | Day | Title | Part 1 | Part 2 | Code |
 | --- | --- | :---: | :---: | --- |
 | ✔ 01 | [Sonar Sweep](https://adventofcode.com/2021/day/1) | 🌟 | 🌟 | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day01.kt) |
+| ✔ 02 | [Dive!](https://adventofcode.com/2021/day/2) | 🌟 | 🌟 | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day02.kt) |

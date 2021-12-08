@@ -10,3 +10,4 @@
 | ✔ 05 | [Hydrothermal Venture](https://adventofcode.com/2021/day/5)    |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day05.kt) |
 | ✔ 06 | [Lanternfish](https://adventofcode.com/2021/day/6)             |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day06.kt) |
 | ✔ 07 | [The Treachery of Whales](https://adventofcode.com/2021/day/7) |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day07.kt) |
+| ✔ 08 | [Seven Segment Search](https://adventofcode.com/2021/day/8)    |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day08.kt) |

@@ -18,7 +18,8 @@ class AllDaysTest {
         Answer({ Day05() }, 6710, 20121),
         Answer({ Day06() }, 349549, 1589590444365),
         Answer({ Day07() }, 347011, 98363777),
-        Answer({ Day08() }, 272, 1007675)
+        Answer({ Day08() }, 272, 1007675),
+        Answer({ Day09() }, 588, 964712)
     ).map {
         val day = it.instance()
 

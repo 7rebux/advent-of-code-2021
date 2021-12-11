@@ -13,3 +13,4 @@
 | ✔ 08 | [Seven Segment Search](https://adventofcode.com/2021/day/8)    |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day08.kt) |
 | ✔ 09 | [Smoke Basin](https://adventofcode.com/2021/day/9)             |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day09.kt) |
 | ✔ 10 | [Syntax Scoring](https://adventofcode.com/2021/day/10)         |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day10.kt) |
+| ✔ 11 | [Dumbo Octopus](https://adventofcode.com/2021/day/11)          |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day11.kt) |

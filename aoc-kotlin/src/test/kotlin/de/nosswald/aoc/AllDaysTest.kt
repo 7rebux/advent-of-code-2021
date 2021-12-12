@@ -16,7 +16,7 @@ class AllDaysTest {
         Answer({ Day03() }, 4138664, 4273224),
         Answer({ Day04() }, 58374, 11377),
         Answer({ Day05() }, 6710, 20121),
-        Answer({ Day06() }, 349549, 1589590444365),
+        Answer({ Day06() }, 349549L, 1589590444365),
         Answer({ Day07() }, 347011, 98363777),
         Answer({ Day08() }, 272, 1007675),
         Answer({ Day09() }, 588, 964712),
@@ -26,11 +26,14 @@ class AllDaysTest {
     ).map {
         val day = it.instance()
 
-        DynamicTest.dynamicTest("Day (${day.dayNumber} - ${day.title}) - Part 1 - expecting ${it.partOne}") {
+        DynamicTest.dynamicTest("Day ${day.dayNumber} - ${day.title}") {
+            print("Testing Part 1 - Expecting ${it.partOne} ..")
             Assertions.assertEquals(it.partOne, day.partOne())
-        }
-        DynamicTest.dynamicTest("Day (${day.dayNumber} - ${day.title}) - Part 2 - expecting ${it.partTwo}") {
+            print(" SUCCESS\n")
+
+            print("Testing Part 2 - Expecting ${it.partTwo} ..")
             Assertions.assertEquals(it.partTwo, day.partTwo())
+            print(" SUCCESS\n")
         }
     }
 }

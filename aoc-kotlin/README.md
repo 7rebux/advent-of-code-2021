@@ -17,3 +17,6 @@
 | ✔ 12 | [Passage Pathing](https://adventofcode.com/2021/day/12)         |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day12.kt) |
 | ✔ 13 | [Transparent Origami](https://adventofcode.com/2021/day/13)     |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day13.kt) |
 | ✔ 14 | [Extended Polymerization](https://adventofcode.com/2021/day/14) |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day14.kt) |
+| ✔ 15 | [Chiton](https://adventofcode.com/2021/day/15)                  |   x    |   x    |                                                                                                                                  |
+| ✔ 16 | [Packet Decoder](https://adventofcode.com/2021/day/16)          |   x    |   x    |                                                                                                                                  |
+| ✔ 17 | [Trick Shot](https://adventofcode.com/2021/day/17)              |   🌟   |   🌟   | [![Code](https://img.shields.io/badge/Code-grey?style=for-the-badge&logo=Kotlin)](src/main/kotlin/de/nosswald/aoc/days/Day17.kt) |

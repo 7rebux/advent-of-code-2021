@@ -19,6 +19,9 @@
 | ✔ 12 | [Passage Pathing](#day-12-passage-pathing)                 |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day12.kt) |
 | ✔ 13 | [Transpartent Origami](#day-13-transparent-origami)        |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day13.kt) |
 | ✔ 14 | [Extended Polymerization](#day-14-extended-polymerization) |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day14.kt) |
+| ✔ 15 | [Chiton](#day-15-chiton)                                   |   x    |   x    |  |
+| ✔ 16 | [Packet Decoder](#day-16-packet-decoder)                   |   x    |   x    |  |
+| ✔ 17 | [Trick Shot](#day-17-trick-shot)                           |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day17.kt) |
 
 ## [Day 01: Sonar Sweep](https://adventofcode.com/2021/day/1)
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -1871,3 +1874,573 @@ elements in the result. *What do you get if you take the quantity of the most co
 and subtract the quantity of the least common element?*
 
 > Your puzzle answer was `3018019237563`.
+
+## [Day 15: Chiton](https://adventofcode.com/2021/day/15)
+You've almost reached the exit of the cave, but the walls are getting closer together. Your
+submarine can barely still fit, though; the main problem is that the walls of the cave are
+covered in [chitons](https://en.wikipedia.org/wiki/Chiton),
+and it would be best not to bump any of them.
+
+The cavern is large, but has a very low ceiling, restricting your motion to two dimensions. The
+shape of the cavern resembles a square; a quick scan of chiton density produces a map of *risk
+level* throughout the cave (your puzzle input). For example:
+
+```
+1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581
+```
+
+You start in the top left position, your destination is the bottom right position, and you
+cannot move diagonally. The number at each position is its *risk level*; to determine the total
+risk of an entire path, add up the risk levels of each position you *enter* (that is, don't
+count the risk level of your starting position unless you enter it; leaving it adds no risk to
+your total).
+
+Your goal is to find a path with the *lowest total risk*. In this example, a path with the
+lowest total risk is highlighted here:
+
+`*1*163751742
+*1*381373672
+*2136511*328
+369493*15*69
+7463417*1*11
+1319128*13*7
+13599124*2*1
+31254216*3*9
+12931385*21*
+231194458*1*
+`
+
+The total risk of this path is `40` (the starting position is never entered, so its risk is
+not counted).
+
+*What is the lowest total risk of any path from the top left to the bottom right?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+Now that you know how to find low-risk paths in the cave, you can try to find your way out.
+
+The entire cave is actually *five times larger in both dimensions* than you thought; the area
+you originally scanned is just one tile in a 5x5 tile area that forms the full map. Your
+original map tile repeats to the right and downward; each time the tile repeats to the right or
+downward, all of its risk levels *are 1 higher* than the tile immediately up or left of it.
+However, risk levels above `9` wrap back around to `1`. So, if your original map had some
+position with a risk level of `8`, then that same position on each of the 25 total tiles would
+be as follows:
+
+```
+8 9 1 2 3
+9 1 2 3 4
+1 2 3 4 5
+2 3 4 5 6
+3 4 5 6 7
+```
+
+Each single digit above corresponds to the example position with a value of `8` on the top-left
+tile. Because the full map is actually five times larger in both dimensions, that position
+appears a total of 25 times, once in each duplicated tile, with the values shown above.
+
+Here is the full five-times-as-large version of the first example above, with the original map
+in the top left corner highlighted:
+
+```*1163751742*2274862853338597396444961841755517295286
+*1381373672*2492484783351359589446246169155735727126
+*2136511328*3247622439435873354154698446526571955763
+*3694931569*4715142671582625378269373648937148475914
+*7463417111*8574528222968563933317967414442817852555
+*1319128137*2421239248353234135946434524615754563572
+*1359912421*2461123532357223464346833457545794456865
+*3125421639*4236532741534764385264587549637569865174
+*1293138521*2314249632342535174345364628545647573965
+*2311944581*3422155692453326671356443778246755488935
+22748628533385973964449618417555172952866628316397
+24924847833513595894462461691557357271266846838237
+32476224394358733541546984465265719557637682166874
+47151426715826253782693736489371484759148259586125
+85745282229685639333179674144428178525553928963666
+24212392483532341359464345246157545635726865674683
+24611235323572234643468334575457944568656815567976
+42365327415347643852645875496375698651748671976285
+23142496323425351743453646285456475739656758684176
+34221556924533266713564437782467554889357866599146
+33859739644496184175551729528666283163977739427418
+35135958944624616915573572712668468382377957949348
+43587335415469844652657195576376821668748793277985
+58262537826937364893714847591482595861259361697236
+96856393331796741444281785255539289636664139174777
+35323413594643452461575456357268656746837976785794
+35722346434683345754579445686568155679767926678187
+53476438526458754963756986517486719762859782187396
+34253517434536462854564757396567586841767869795287
+45332667135644377824675548893578665991468977611257
+44961841755517295286662831639777394274188841538529
+46246169155735727126684683823779579493488168151459
+54698446526571955763768216687487932779859814388196
+69373648937148475914825958612593616972361472718347
+17967414442817852555392896366641391747775241285888
+46434524615754563572686567468379767857948187896815
+46833457545794456865681556797679266781878137789298
+64587549637569865174867197628597821873961893298417
+45364628545647573965675868417678697952878971816398
+56443778246755488935786659914689776112579188722368
+55172952866628316397773942741888415385299952649631
+57357271266846838237795794934881681514599279262561
+65719557637682166874879327798598143881961925499217
+71484759148259586125936169723614727183472583829458
+28178525553928963666413917477752412858886352396999
+57545635726865674683797678579481878968159298917926
+57944568656815567976792667818781377892989248891319
+75698651748671976285978218739618932984172914319528
+56475739656758684176786979528789718163989182927419
+67554889357866599146897761125791887223681299833479
+```
+
+Equipped with the full map, you can now find a path from the top left corner to the bottom
+right corner with the lowest total risk:
+
+```
+*1*1637517422274862853338597396444961841755517295286
+*1*3813736722492484783351359589446246169155735727126
+*2*1365113283247622439435873354154698446526571955763
+*3*6949315694715142671582625378269373648937148475914
+*7*4634171118574528222968563933317967414442817852555
+*1*3191281372421239248353234135946434524615754563572
+*1*3599124212461123532357223464346833457545794456865
+*3*1254216394236532741534764385264587549637569865174
+*1*2931385212314249632342535174345364628545647573965
+*2*3119445813422155692453326671356443778246755488935
+*2*2748628533385973964449618417555172952866628316397
+*2*4924847833513595894462461691557357271266846838237
+*324*76224394358733541546984465265719557637682166874
+47*15*1426715826253782693736489371484759148259586125
+857*4*5282229685639333179674144428178525553928963666
+242*1*2392483532341359464345246157545635726865674683
+246*1123532*3572234643468334575457944568656815567976
+423653274*1*5347643852645875496375698651748671976285
+231424963*2342*5351743453646285456475739656758684176
+342215569245*332*66713564437782467554889357866599146
+33859739644496*1*84175551729528666283163977739427418
+35135958944624*61*6915573572712668468382377957949348
+435873354154698*44*652657195576376821668748793277985
+5826253782693736*4*893714847591482595861259361697236
+9685639333179674*1*444281785255539289636664139174777
+3532341359464345*2461*575456357268656746837976785794
+3572234643468334575*4*579445686568155679767926678187
+5347643852645875496*3*756986517486719762859782187396
+3425351743453646285*4564*757396567586841767869795287
+4533266713564437782467*554*8893578665991468977611257
+449618417555172952866628*3163*9777394274188841538529
+462461691557357271266846838*2*3779579493488168151459
+546984465265719557637682166*8*7487932779859814388196
+693736489371484759148259586*125*93616972361472718347
+17967414442817852555392896366*6413*91747775241285888
+46434524615754563572686567468379*7*67857948187896815
+46833457545794456865681556797679*26*6781878137789298
+645875496375698651748671976285978*21*873961893298417
+4536462854564757396567586841767869*7*952878971816398
+5644377824675548893578665991468977*6112*579188722368
+5517295286662831639777394274188841538*5*299952649631
+5735727126684683823779579493488168151*4*599279262561
+6571955763768216687487932779859814388*1*961925499217
+7148475914825958612593616972361472718*34725*83829458
+28178525553928963666413917477752412858886*3*52396999
+57545635726865674683797678579481878968159*2*98917926
+57944568656815567976792667818781377892989*24*8891319
+756986517486719762859782187396189329841729*1431*9528
+564757396567586841767869795287897181639891829*2*7419
+675548893578665991468977611257918872236812998*33479*
+```
+
+The total risk of this path is `315` (the starting position is still never entered, so its
+risk is not counted).
+
+Using the full map, *what is the lowest total risk of any path from the top left to the bottom
+right?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 16: Packet Decoder](https://adventofcode.com/2021/day/16)
+As you leave the cave and reach open waters, you receive a transmission from the Elves back on
+the ship.
+
+The transmission was sent using the Buoyancy Interchange Transmission System (BITS), a method
+of packing numeric expressions into a binary sequence. Your submarine's computer has saved the
+transmission in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) (your puzzle input).
+
+The first step of decoding the message is to convert the hexadecimal representation into
+binary. Each character of hexadecimal corresponds to four bits of binary data:
+
+```
+0 = 0000
+1 = 0001
+2 = 0010
+3 = 0011
+4 = 0100
+5 = 0101
+6 = 0110
+7 = 0111
+8 = 1000
+9 = 1001
+A = 1010
+B = 1011
+C = 1100
+D = 1101
+E = 1110
+F = 1111
+```
+
+The BITS transmission contains a single *packet* at its outermost layer which itself contains
+many other packets. The hexadecimal representation of this packet might encode a few extra `0`
+bits at the end; these are not part of the transmission and should be ignored.
+
+Every packet begins with a standard header: the first three bits encode the packet *version*,
+and the next three bits encode the packet *type ID*. These two values are numbers; all numbers
+encoded in any packet are represented as binary with the most significant bit first. For
+example, a version encoded as the binary sequence `100` represents the number `4`.
+
+Packets with type ID `4` represent a *literal value*. Literal value packets encode a single
+binary number. To do this, the binary number is padded with leading zeroes until its length is
+a multiple of four bits, and then it is broken into groups of four bits. Each group is prefixed
+by a `1` bit except the last group, which is prefixed by a `0` bit. These groups of five bits
+immediately follow the packet header. For example, the hexadecimal string `D2FE28` becomes:
+
+```
+110100101111111000101000
+VVVTTTAAAAABBBBBCCCCC
+```
+
+Below each bit is a label indicating its purpose:
+
+* The three bits labeled `V` (`110`) are the packet version, `6`.
+* The three bits labeled `T` (`100`) are the packet type ID, `4`, which means the packet is a
+  literal value.
+* The five bits labeled `A` (`10111`) start with a `1` (not the last group, keep reading) and
+  contain the first four bits of the number, `0111`.
+* The five bits labeled `B` (`11110`) start with a `1` (not the last group, keep reading) and
+  contain four more bits of the number, `1110`.
+* The five bits labeled `C` (`00101`) start with a `0` (last group, end of packet) and contain
+  the last four bits of the number, `0101`.
+* The three unlabeled `0` bits at the end are extra due to the hexadecimal representation and
+  should be ignored.
+
+So, this packet represents a literal value with binary representation `011111100101`, which is
+`2021` in decimal.
+
+Every other type of packet (any packet with a type ID other than `4`) represent an *operator*
+that performs some calculation on one or more sub-packets contained within. Right now, the
+specific operations aren't important; focus on parsing the hierarchy of sub-packets.
+
+An operator packet contains one or more packets. To indicate which subsequent binary data
+represents its sub-packets, an operator packet can use one of two modes indicated by the bit
+immediately after the packet header; this is called the *length type ID*:
+
+* If the length type ID is `0`, then the next *15* bits are a number that represents the *total
+  length in bits* of the sub-packets contained by this packet.
+* If the length type ID is `1`, then the next *11* bits are a number that represents the
+  *number of sub-packets immediately contained* by this packet.
+
+Finally, after the length type ID bit and the 15-bit or 11-bit field, the sub-packets appear.
+
+For example, here is an operator packet (hexadecimal string `38006F45291200`) with length type
+ID `0` that contains two sub-packets:
+
+```
+00111000000000000110111101000101001010010001001000000000
+VVVTTTILLLLLLLLLLLLLLLAAAAAAAAAAABBBBBBBBBBBBBBBB
+```
+
+* The three bits labeled `V` (`001`) are the packet version, `1`.
+* The three bits labeled `T` (`110`) are the packet type ID, `6`, which means the packet is an
+  operator.
+* The bit labeled `I` (`0`) is the length type ID, which indicates that the length is a 15-bit
+  number representing the number of bits in the sub-packets.
+* The 15 bits labeled `L` (`000000000011011`) contain the length of the sub-packets in bits,
+  `27`.
+* The 11 bits labeled `A` contain the first sub-packet, a literal value representing the number
+  `10`.
+* The 16 bits labeled `B` contain the second sub-packet, a literal value representing the
+  number `20`.
+
+After reading 11 and 16 bits of sub-packet data, the total length indicated in `L` (27) is
+reached, and so parsing of this packet stops.
+
+As another example, here is an operator packet (hexadecimal string `EE00D40C823060`) with
+length type ID `1` that contains three sub-packets:
+
+```
+11101110000000001101010000001100100000100011000001100000
+VVVTTTILLLLLLLLLLLAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCC
+```
+
+* The three bits labeled `V` (`111`) are the packet version, `7`.
+* The three bits labeled `T` (`011`) are the packet type ID, `3`, which means the packet is an
+  operator.
+* The bit labeled `I` (`1`) is the length type ID, which indicates that the length is a 11-bit
+  number representing the number of sub-packets.
+* The 11 bits labeled `L` (`00000000011`) contain the number of sub-packets, `3`.
+* The 11 bits labeled `A` contain the first sub-packet, a literal value representing the number
+  `1`.
+* The 11 bits labeled `B` contain the second sub-packet, a literal value representing the
+  number `2`.
+* The 11 bits labeled `C` contain the third sub-packet, a literal value representing the number
+  `3`.
+
+After reading 3 complete sub-packets, the number of sub-packets indicated in `L` (3) is
+reached, and so parsing of this packet stops.
+
+For now, parse the hierarchy of the packets throughout the transmission and *add up all of the
+version numbers*.
+
+Here are a few more examples of hexadecimal-encoded transmissions:
+
+* `8A004A801A8002F478` represents an operator packet (version 4) which contains an operator
+  packet (version 1) which contains an operator packet (version 5) which contains a literal
+  value (version 6); this packet has a version sum of `*16*`.
+* `620080001611562C8802118E34` represents an operator packet (version 3) which contains two
+  sub-packets; each sub-packet is an operator packet that contains two literal values. This
+  packet has a version sum of `*12*`.
+* `C0015000016115A2E0802F182340` has the same structure as the previous example, but the
+  outermost packet uses a different length type ID. This packet has a version sum of `*23*`.
+* `A0016C880162017C3686B18A3D4780` is an operator packet that contains an operator packet that
+  contains an operator packet that contains five literal values; it has a version sum of
+  `*31*`.
+
+Decode the structure of your hexadecimal-encoded BITS transmission; *what do you get if you add
+up the version numbers in all packets?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+Now that you have the structure of your transmission decoded, you can calculate the value of
+the expression it represents.
+
+Literal values (type ID `4`) represent a single number as described above. The remaining type
+IDs are more interesting:
+
+* Packets with type ID `0` are *sum* packets - their value is the sum of the values of their
+  sub-packets. If they only have a single sub-packet, their value is the value of the
+  sub-packet.
+* Packets with type ID `1` are *product* packets - their value is the result of multiplying
+  together the values of their sub-packets. If they only have a single sub-packet, their value
+  is the value of the sub-packet.
+* Packets with type ID `2` are *minimum* packets - their value is the minimum of the values of
+  their sub-packets.
+* Packets with type ID `3` are *maximum* packets - their value is the maximum of the values of
+  their sub-packets.
+* Packets with type ID `5` are *greater than* packets - their value is *1* if the value of the
+  first sub-packet is greater than the value of the second sub-packet; otherwise, their value
+  is *0*. These packets always have exactly two sub-packets.
+* Packets with type ID `6` are *less than* packets - their value is *1* if the value of the
+  first sub-packet is less than the value of the second sub-packet; otherwise, their value is
+  *0*. These packets always have exactly two sub-packets.
+* Packets with type ID `7` are *equal to* packets - their value is *1* if the value of the
+  first sub-packet is equal to the value of the second sub-packet; otherwise, their value is
+  *0*. These packets always have exactly two sub-packets.
+
+Using these rules, you can now work out the value of the outermost packet in your BITS
+transmission.
+
+For example:
+
+* `C200B40A82` finds the sum of `1` and `2`, resulting in the value `*3*`.
+* `04005AC33890` finds the product of `6` and `9`, resulting in the value `*54*`.
+* `880086C3E88112` finds the minimum of `7`, `8`, and `9`, resulting in the value `*7*`.
+* `CE00C43D881120` finds the maximum of `7`, `8`, and `9`, resulting in the value `*9*`.
+* `D8005AC2A8F0` produces `1`, because `5` is less than `15`.
+* `F600BC2D8F` produces `0`, because `5` is not greater than `15`.
+* `9C005AC2F8F0` produces `0`, because `5` is not equal to `15`.
+* `9C0141080250320F1802104A08` produces `1`, because `1` + `3` = `2` * `2`.
+
+*What do you get if you evaluate the expression represented by your hexadecimal-encoded BITS
+transmission?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 17: Trick Shot](https://adventofcode.com/2021/day/17)
+You finally decode the Elves' message. `HI`, the message says. You continue searching for the
+sleigh keys.
+
+Ahead of you is what appears to be a large
+[ocean trench](https://en.wikipedia.org/wiki/Oceanic_trench).
+Could the keys have fallen into it? You'd better send a probe to investigate.
+
+The probe launcher on your submarine can fire the probe with any
+[integer](https://en.wikipedia.org/wiki/Integer) velocity in the `x` (forward) and
+`y` (upward, or downward if negative) directions. For example, an initial
+`x,y` velocity like `0,10` would fire the probe straight up, while an initial velocity like
+`10,-1` would fire the probe forward at a slight downward angle.
+
+The probe's `x,y` position starts at `0,0`. Then, it will follow some trajectory by moving in
+*steps*. On each step, these changes occur in the following order:
+
+* The probe's `x` position increases by its `x` velocity.
+* The probe's `y` position increases by its `y` velocity.
+* Due to drag, the probe's `x` velocity changes by `1` toward the value `0`; that is, it
+  decreases by `1` if it is greater than `0`, increases by `1` if it is less than `0`, or
+  does not change if it is already `0`.
+* Due to gravity, the probe's `y` velocity decreases by `1`.
+
+For the probe to successfully make it into the trench, the probe must be on some trajectory
+that causes it to be within a *target area* after any step. The submarine computer has
+already calculated this target area (your puzzle input). For example:
+
+`target area: x=20..30, y=-10..-5`
+
+This target area means that you need to find initial `x,y` velocity values such that after
+any step, the probe's `x` position is at least `20` and at most `30`, *and* the probe's `y`
+position is at least `-10` and at most `-5`.
+
+Given this target area, one initial velocity that causes the probe to be within the target
+area after any step is `7,2`:
+
+```
+.............#....#............
+.......#..............#........
+...............................
+S........................#.....
+...............................
+...............................
+...........................#...
+...............................
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTT#TT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+```
+
+In this diagram, `S` is the probe's initial position, `0,0`. The `x` coordinate increases to
+the right, and the `y` coordinate increases upward. In the bottom right, positions that are
+within the target area are shown as `T`. After each step (until the target area is reached),
+the position of the probe is marked with `#`. (The bottom-right `#` is both a position the
+probe reaches and a position in the target area.)
+
+Another initial velocity that causes the probe to be within the target area after any step is
+`6,3`:
+
+```
+...............#..#............
+...........#........#..........
+...............................
+......#..............#.........
+...............................
+...............................
+S....................#.........
+...............................
+...............................
+...............................
+.....................#.........
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................T#TTTTTTTTT
+....................TTTTTTTTTTT
+```
+
+Another one is `9,0`:
+
+```
+S........#.....................
+.................#.............
+...............................
+........................#......
+...............................
+....................TTTTTTTTTTT
+....................TTTTTTTTTT#
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+```
+
+One initial velocity that *doesn't* cause the probe to be within the target area after any
+step is `17,-4`:
+
+```
+S..............................................................
+...............................................................
+...............................................................
+...............................................................
+.................#.............................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT..#.............................
+....................TTTTTTTTTTT................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+................................................#..............
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+..............................................................#
+```
+
+The probe appears to pass through the target area, but is never within it after any step.
+Instead, it continues down and to the right - only the first few steps are shown.
+
+If you're going to fire a highly scientific probe out of a super cool probe launcher, you
+might as well do it with *style*. How high can you make the probe go while still reaching the
+target area?
+
+In the above example, using an initial velocity of `6,9` is the best you can do, causing the
+probe to reach a maximum `y` position of `45`. (Any higher initial `y` velocity causes the
+probe to overshoot the target area entirely.)
+
+Find the initial velocity that causes the probe to reach the highest `y` position and still
+eventually be within the target area after any step. *What is the highest `y` position it
+reaches on this trajectory?*
+
+> Your puzzle answer was `15931`.
+
+### Part Two
+
+Maybe a fancy trick shot isn't the best idea; after all, you only have one probe, so you had
+better not miss.
+
+To get the best idea of what your options are for launching the probe, you need to find
+*every initial velocity* that causes the probe to eventually be within the target area after
+any step.
+
+In the above example, there are `112` different initial velocity values that meet these
+criteria:
+
+```
+23,-10  25,-9   27,-5   29,-6   22,-6   21,-7   9,0     27,-7   24,-5
+25,-7   26,-6   25,-5   6,8     11,-2   20,-5   29,-10  6,3     28,-7
+8,0     30,-6   29,-8   20,-10  6,7     6,4     6,1     14,-4   21,-6
+26,-10  7,-1    7,7     8,-1    21,-9   6,2     20,-7   30,-10  14,-3
+20,-8   13,-2   7,3     28,-8   29,-9   15,-3   22,-5   26,-8   25,-8
+25,-6   15,-4   9,-2    15,-2   12,-2   28,-9   12,-3   24,-6   23,-7
+25,-10  7,8     11,-3   26,-7   7,1     23,-9   6,0     22,-10  27,-6
+8,1     22,-8   13,-4   7,6     28,-6   11,-4   12,-4   26,-9   7,4
+24,-10  23,-8   30,-8   7,0     9,-1    10,-1   26,-5   22,-9   6,5
+7,5     23,-6   28,-10  10,-2   11,-1   20,-9   14,-2   29,-7   13,-3
+23,-5   24,-8   27,-9   30,-7   28,-5   21,-10  7,9     6,6     21,-5
+27,-10  7,2     30,-9   21,-8   22,-7   24,-9   20,-6   6,9     29,-5
+8,-2    27,-8   30,-5   24,-7
+```
+
+*How many distinct initial velocity values cause the probe to be within the target area after
+any step?*
+
+> Your puzzle answer was `2555`.

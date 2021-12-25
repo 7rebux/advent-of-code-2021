@@ -19,9 +19,17 @@
 | ✔ 12 | [Passage Pathing](#day-12-passage-pathing)                 |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day12.kt) |
 | ✔ 13 | [Transpartent Origami](#day-13-transparent-origami)        |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day13.kt) |
 | ✔ 14 | [Extended Polymerization](#day-14-extended-polymerization) |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day14.kt) |
-| ✔ 15 | [Chiton](#day-15-chiton)                                   |   x    |   x    |  |
-| ✔ 16 | [Packet Decoder](#day-16-packet-decoder)                   |   x    |   x    |  |
+| ❌ 15 | [Chiton](#day-15-chiton)                                   |   ❌    |   ❌    |  |
+| ❌ 16 | [Packet Decoder](#day-16-packet-decoder)                   |   ❌    |   ❌    |  |
 | ✔ 17 | [Trick Shot](#day-17-trick-shot)                           |   🌟   |   🌟   | [![Kotlin](https://img.shields.io/badge/Kotlin-grey?style=for-the-badge&logo=Kotlin)](aoc-kotlin/src/main/kotlin/de/nosswald/aoc/days/Day17.kt) |
+| ❌ 18 | [Snailfish](#day-18-snailfish)                   |   ❌    |   ❌    |  |
+| ❌ 19 | [Beacon Scanner](#day-19-beacon-scanner)                   |   ❌    |   ❌    |  |
+| ❌ 20 | [Trench Map](#day-20-trench-map)                   |   ❌    |   ❌    |  |
+| ❌ 21 | [Dirac Dice](#day-21-dirac-dice)                   |   ❌    |   ❌    |  |
+| ❌ 22 | [Reactor Reboot](#day-22-reactor-reboot)                   |   ❌    |   ❌    |  |
+| ❌ 23 | [Amphipod](#day-23-amphipod)                   |   ❌    |   ❌    |  |
+| ❌ 24 | [Arithmetic Logic Unit](#day-24-arithmetic-logic-unit)                   |   ❌    |   ❌    |  |
+| ❌ 25 | [Sea Cucumber](#day-25-sea-cucumber)                   |   ❌    |   ❌    | 
 
 ## [Day 01: Sonar Sweep](https://adventofcode.com/2021/day/1)
 You're minding your own business on a ship at sea when the overboard alarm goes off! You rush to see if you can help. Apparently, one of the Elves tripped and accidentally sent the sleigh keys flying into the ocean!
@@ -2444,3 +2452,1916 @@ criteria:
 any step?*
 
 > Your puzzle answer was `2555`.
+
+## [Day 18: Snailfish](https://adventofcode.com/2021/day/18)
+You descend into the ocean trench and encounter some
+[snailfish](https://en.wikipedia.org/wiki/Snailfish). They say they saw the
+sleigh keys! They'll even tell you which direction the keys went if you help one of the
+smaller snailfish with his *math homework*.
+
+Snailfish numbers aren't like regular numbers. Instead, every snailfish number is a *pair* -
+an ordered list of two elements. Each element of the pair can be either a regular number or
+another pair.
+
+Pairs are written as `[x,y]`, where `x` and `y` are the elements within the pair. Here are
+some example snailfish numbers, one snailfish number per line:
+
+```
+[1,2]
+[[1,2],3]
+[9,[8,7]]
+[[1,9],[8,5]]
+[[[[1,2],[3,4]],[[5,6],[7,8]]],9]
+[[[9,[3,8]],[[0,9],6]],[[[3,7],[4,9]],3]]
+[[[[1,3],[5,3]],[[1,3],[8,7]]],[[[4,9],[6,9]],[[8,2],[7,3]]]]
+```
+
+This snailfish homework is about *addition*. To add two snailfish numbers, form a pair from
+the left and right parameters of the addition operator. For example, `[1,2]` + `[[3,4],5]`
+becomes `[[1,2],[[3,4],5]]`.
+
+There's only one problem: *snailfish numbers must always be reduced*, and the process of
+adding two snailfish numbers can result in snailfish numbers that need to be reduced.
+
+To *reduce a snailfish number*, you must repeatedly do the first action in this list that
+applies to the snailfish number:
+
+* If any pair is *nested inside four pairs*, the leftmost such pair *explodes*.
+* If any regular number is *10 or greater*, the leftmost such regular number *splits*.
+
+Once no action in the above list applies, the snailfish number is reduced.
+
+During reduction, at most one action applies, after which the process returns to the top of
+the list of actions. For example, if *split* produces a pair that meets the *explode*
+criteria, that pair *explodes* before other *splits* occur.
+
+To *explode* a pair, the pair's left value is added to the first regular number to the left
+of the exploding pair (if any), and the pair's right value is added to the first regular
+number to the right of the exploding pair (if any). Exploding pairs will always consist of
+two regular numbers. Then, the entire exploding pair is replaced with the regular number `0`.
+
+Here are some examples of a single explode action:
+
+* `[[[[*[9,8]*,1],2],3],4]` becomes `[[[[*0*,*9*],2],3],4]` (the `9` has no regular number to
+  its left, so it is not added to any regular number).
+* `[7,[6,[5,[4,*[3,2]*]]]]` becomes `[7,[6,[5,[*7*,*0*]]]]` (the `2` has no regular number to
+  its right, and so it is not added to any regular number).
+* `[[6,[5,[4,*[3,2]*]]],1]` becomes `[[6,[5,[*7*,*0*]]],*3*]`.
+* `[[3,[2,[1,*[7,3]*]]],[6,[5,[4,[3,2]]]]]` becomes `[[3,[2,[*8*,*0*]]],[*9*,[5,[4,[3,2]]]]]`
+  (the pair `[3,2]` is unaffected because the pair `[7,3]` is further to the left; `[3,2]`
+  would explode on the next action).
+* `[[3,[2,[8,0]]],[9,[5,[4,*[3,2]*]]]]` becomes `[[3,[2,[8,0]]],[9,[5,[*7*,*0*]]]]`.
+
+To *split* a regular number, replace it with a pair; the left element of the pair should be
+the regular number divided by two and rounded *down*, while the right element of the pair
+should be the regular number divided by two and rounded *up*. For example, `10` becomes
+`[5,5]`, `11` becomes `[5,6]`, `12` becomes `[6,6]`, and so on.
+
+Here is the process of finding the reduced result of `[[[[4,3],4],4],[7,[[8,4],9]]]` +
+`[1,1]`:
+
+```
+after addition: [[[[*[4,3]*,4],4],[7,[[8,4],9]]],[1,1]]
+after explode:  [[[[0,7],4],[7,[*[8,4]*,9]]],[1,1]]
+after explode:  [[[[0,7],4],[*15*,[0,13]]],[1,1]]
+after split:    [[[[0,7],4],[[7,8],[0,*13*]]],[1,1]]
+after split:    [[[[0,7],4],[[7,8],[0,*[6,7]*]]],[1,1]]
+after explode:  [[[[0,7],4],[[7,8],[6,0]]],[8,1]]
+```
+
+Once no reduce actions apply, the snailfish number that remains is the actual result of the
+addition operation: `[[[[0,7],4],[[7,8],[6,0]]],[8,1]]`.
+
+The homework assignment involves adding up a *list of snailfish numbers* (your puzzle input).
+The snailfish numbers are each listed on a separate line. Add the first snailfish number and
+the second, then add that result and the third, then add that result and the fourth, and so
+on until all numbers in the list have been used once.
+
+For example, the final sum of this list is `[[[[1,1],[2,2]],[3,3]],[4,4]]`:
+
+```
+[1,1]
+[2,2]
+[3,3]
+[4,4]
+```
+
+The final sum of this list is `[[[[3,0],[5,3]],[4,4]],[5,5]]`:
+
+```
+[1,1]
+[2,2]
+[3,3]
+[4,4]
+[5,5]
+```
+
+The final sum of this list is `[[[[5,0],[7,4]],[5,5]],[6,6]]`:
+
+```
+[1,1]
+[2,2]
+[3,3]
+[4,4]
+[5,5]
+[6,6]
+```
+
+Here's a slightly larger example:
+
+```
+[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]
+[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]
+[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]
+[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]
+[7,[5,[[3,8],[1,4]]]]
+[[2,[2,2]],[8,[8,1]]]
+[2,9]
+[1,[[[9,3],9],[[9,0],[0,7]]]]
+[[[5,[7,4]],7],1]
+[[[[4,2],2],6],[8,7]]
+```
+
+The final sum `[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]` is found after adding
+up the above snailfish numbers:
+
+```
+  [[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]
++ [7,[[[3,7],[4,3]],[[6,3],[8,8]]]]
+  = [[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]
+  [[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]
++ [[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]
+  = [[[[6,7],[6,7]],[[7,7],[0,7]]],[[[8,7],[7,7]],[[8,8],[8,0]]]]
+  [[[[6,7],[6,7]],[[7,7],[0,7]]],[[[8,7],[7,7]],[[8,8],[8,0]]]]
++ [[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]
+  = [[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]
+  [[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]
++ [7,[5,[[3,8],[1,4]]]]
+  = [[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]
+  [[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]
++ [[2,[2,2]],[8,[8,1]]]
+  = [[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]]
+  [[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]]
++ [2,9]
+  = [[[[6,6],[7,7]],[[0,7],[7,7]]],[[[5,5],[5,6]],9]]
+  [[[[6,6],[7,7]],[[0,7],[7,7]]],[[[5,5],[5,6]],9]]
++ [1,[[[9,3],9],[[9,0],[0,7]]]]
+  = [[[[7,8],[6,7]],[[6,8],[0,8]]],[[[7,7],[5,0]],[[5,5],[5,6]]]]
+  [[[[7,8],[6,7]],[[6,8],[0,8]]],[[[7,7],[5,0]],[[5,5],[5,6]]]]
++ [[[5,[7,4]],7],1]
+  = [[[[7,7],[7,7]],[[8,7],[8,7]]],[[[7,0],[7,7]],9]]
+  [[[[7,7],[7,7]],[[8,7],[8,7]]],[[[7,0],[7,7]],9]]
++ [[[[4,2],2],6],[8,7]]
+  = [[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]
+```
+
+To check whether it's the right answer, the snailfish teacher only checks the *magnitude* of
+the final sum. The magnitude of a pair is 3 times the magnitude of its left element plus 2
+times the magnitude of its right element. The magnitude of a regular number is just that
+number.
+
+For example, the magnitude of `[9,1]` is `3*9 + 2*1 = *29*`; the magnitude of `[1,9]`
+is `3*1 + 2*9 = *21*`.
+Magnitude calculations are recursive: the magnitude of `[[9,1],[1,9]]` is `3*29 + 2*21 = *129*`.
+
+Here are a few more magnitude examples:
+
+* `[[1,2],[[3,4],5]]` becomes `*143*`.
+* `[[[[0,7],4],[[7,8],[6,0]]],[8,1]]` becomes `*1384*`.
+* `[[[[1,1],[2,2]],[3,3]],[4,4]]` becomes `*445*`.
+* `[[[[3,0],[5,3]],[4,4]],[5,5]]` becomes `*791*`.
+* `[[[[5,0],[7,4]],[5,5]],[6,6]]` becomes `*1137*`.
+* `[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]` becomes `*3488*`.
+
+So, given this example homework assignment:
+
+```
+[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+[[[5,[2,8]],4],[5,[[9,9],0]]]
+[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+[[[[5,4],[7,7]],8],[[8,3],8]]
+[[9,3],[[9,9],[6,[4,9]]]]
+[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
+```
+
+The final sum is:
+
+`[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]`
+
+The magnitude of this final sum is `*4140*`.
+
+Add up all of the snailfish numbers from the homework assignment in the order they appear.
+*What is the magnitude of the final sum?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+You notice a second question on the back of the homework assignment:
+
+What is the largest magnitude you can get from adding only two of the snailfish numbers?
+
+Note that snailfish addition is not
+[commutative](https://en.wikipedia.org/wiki/Commutative_property) -
+that is, `x + y` and `y + x` can produce different results.
+
+Again considering the last example homework assignment above:
+
+```
+[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+[[[5,[2,8]],4],[5,[[9,9],0]]]
+[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+[[[[5,4],[7,7]],8],[[8,3],8]]
+[[9,3],[[9,9],[6,[4,9]]]]
+[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
+```
+
+The largest magnitude of the sum of any two snailfish numbers in this list is `*3993*`. This
+is the magnitude of `[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]` +
+`[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]`, which reduces to
+`[[[[7,8],[6,6]],[[6,0],[7,7]]],[[[7,8],[8,8]],[[7,9],[0,6]]]]`.
+
+*What is the largest magnitude of any sum of two different snailfish numbers from the
+homework assignment?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 19: Beacon Scanner](https://adventofcode.com/2021/day/19)
+As your probe drifted down through this area, it released an assortment of *beacons*
+and *scanners* into the water. It's difficult to navigate in the pitch black open waters of
+the ocean trench, but if you can build a map of the trench using data from the scanners,
+you should be able to safely reach the bottom.
+
+The beacons and scanners float motionless in the water; they're designed to maintain the
+same position for long periods of time. Each scanner is capable of detecting all beacons in
+a large cube centered on the scanner; beacons that are at most 1000 units away from the
+scanner in each of the three axes (`x`, `y`, and `z`) have their precise position
+determined relative to the scanner. However, scanners cannot detect other scanners. The
+submarine has automatically summarized the relative positions of beacons detected by each
+scanner (your puzzle input).
+
+For example, if a scanner is at `x,y,z` coordinates `500,0,-500` and there are beacons at
+`-500,1000,-1500` and `1501,0,-500`, the scanner could report that the first beacon is at
+`-1000,1000,-1000` (relative to the scanner) but would not detect the second beacon at all.
+
+Unfortunately, while each scanner can report the positions of all detected beacons relative
+to itself, *the scanners do not know their own position*. You'll need to determine the
+positions of the beacons and scanners yourself.
+
+The scanners and beacons map a single contiguous 3d region. This region can be
+reconstructed by finding pairs of scanners that have overlapping detection regions such
+that there are *at least 12 beacons* that both scanners detect within the overlap. By
+establishing 12 common beacons, you can precisely determine where the scanners are relative
+to each other, allowing you to reconstruct the beacon map one scanner at a time.
+
+For a moment, consider only two dimensions. Suppose you have the following scanner reports:
+
+```
+--- scanner 0
+0,2
+4,1
+3,3
+--- scanner 1
+-1,-1
+-5,0
+-2,1
+```
+
+Drawing `x` increasing rightward, `y` increasing upward, scanners as `S`, and beacons as
+`B`, scanner `0` detects this:
+
+```
+...B.
+B....
+....B
+S....
+```
+
+Scanner `1` detects this:
+
+```
+...B..
+B....S
+....B.
+```
+
+For this example, assume scanners only need 3 overlapping beacons. Then, the beacons
+visible to both scanners overlap to produce the following complete map:
+
+```
+...B..
+B....S
+....B.
+S.....
+```
+
+Unfortunately, there's a second problem: the scanners also don't know their *rotation or
+facing direction*. Due to magnetic alignment, each scanner is rotated some integer number
+of 90-degree turns around all of the `x`, `y`, and `z` axes. That is, one scanner might
+call a direction positive `x`, while another scanner might call that direction negative
+`y`. Or, two scanners might agree on which direction is positive `x`, but one scanner might
+be upside-down from the perspective of the other scanner. In total, each scanner could be
+in any of 24 different orientations: facing positive or negative `x`, `y`, or `z`, and
+considering any of four directions "up" from that facing.
+
+For example, here is an arrangement of beacons as seen from a scanner in the same position
+but in different orientations:
+
+```
+--- scanner 0
+-1,-1,1
+-2,-2,2
+-3,-3,3
+-2,-3,1
+5,6,-4
+8,0,7
+--- scanner 0
+1,-1,1
+2,-2,2
+3,-3,3
+2,-1,3
+-5,4,-6
+-8,-7,0
+--- scanner 0
+-1,-1,-1
+-2,-2,-2
+-3,-3,-3
+-1,-3,-2
+4,6,5
+-7,0,8
+--- scanner 0
+1,1,-1
+2,2,-2
+3,3,-3
+1,3,-2
+-4,-6,5
+7,0,8
+--- scanner 0
+1,1,1
+2,2,2
+3,3,3
+3,1,2
+-6,-4,-5
+0,7,-8
+```
+
+By finding pairs of scanners that both see at least 12 of the same beacons, you can
+assemble the entire map. For example, consider the following report:
+
+```
+--- scanner 0
+404,-588,-901
+528,-643,409
+-838,591,734
+390,-675,-793
+-537,-823,-458
+-485,-357,347
+-345,-311,381
+-661,-816,-575
+-876,649,763
+-618,-824,-621
+553,345,-567
+474,580,667
+-447,-329,318
+-584,868,-557
+544,-627,-890
+564,392,-477
+455,729,728
+-892,524,684
+-689,845,-530
+423,-701,434
+7,-33,-71
+630,319,-379
+443,580,662
+-789,900,-551
+459,-707,401
+--- scanner 1
+686,422,578
+605,423,415
+515,917,-361
+-336,658,858
+95,138,22
+-476,619,847
+-340,-569,-846
+567,-361,727
+-460,603,-452
+669,-402,600
+729,430,532
+-500,-761,534
+-322,571,750
+-466,-666,-811
+-429,-592,574
+-355,545,-477
+703,-491,-529
+-328,-685,520
+413,935,-424
+-391,539,-444
+586,-435,557
+-364,-763,-893
+807,-499,-711
+755,-354,-619
+553,889,-390
+--- scanner 2
+649,640,665
+682,-795,504
+-784,533,-524
+-644,584,-595
+-588,-843,648
+-30,6,44
+-674,560,763
+500,723,-460
+609,671,-379
+-555,-800,653
+-675,-892,-343
+697,-426,-610
+578,704,681
+493,664,-388
+-671,-858,530
+-667,343,800
+571,-461,-707
+-138,-166,112
+-889,563,-600
+646,-828,498
+640,759,510
+-630,509,768
+-681,-892,-333
+673,-379,-804
+-742,-814,-386
+577,-820,562
+--- scanner 3
+-589,542,597
+605,-692,669
+-500,565,-823
+-660,373,557
+-458,-679,-417
+-488,449,543
+-626,468,-788
+338,-750,-386
+528,-832,-391
+562,-778,733
+-938,-730,414
+543,643,-506
+-524,371,-870
+407,773,750
+-104,29,83
+378,-903,-323
+-778,-728,485
+426,699,580
+-438,-605,-362
+-469,-447,-387
+509,732,623
+647,635,-688
+-868,-804,481
+614,-800,639
+595,780,-596
+--- scanner 4
+727,592,562
+-293,-554,779
+441,611,-461
+-714,465,-776
+-743,427,-804
+-660,-479,-426
+832,-632,460
+927,-485,-438
+408,393,-506
+466,436,-512
+110,16,151
+-258,-428,682
+-393,719,612
+-211,-452,876
+808,-476,-593
+-575,615,604
+-485,667,467
+-680,325,-822
+-627,-443,-432
+872,-547,-609
+833,512,582
+807,604,487
+839,-516,451
+891,-625,532
+-652,-548,-490
+30,-46,-14
+```
+
+Because all coordinates are relative, in this example, all "absolute" positions will be
+expressed relative to scanner `0` (using the orientation of scanner `0` and as if scanner
+`0` is at coordinates `0,0,0`).
+
+Scanners `0` and `1` have overlapping detection cubes; the 12 beacons they both detect
+(relative to scanner `0`) are at the following coordinates:
+
+```
+-618,-824,-621
+-537,-823,-458
+-447,-329,318
+404,-588,-901
+544,-627,-890
+528,-643,409
+-661,-816,-575
+390,-675,-793
+423,-701,434
+-345,-311,381
+459,-707,401
+-485,-357,347
+```
+
+These same 12 beacons (in the same order) but from the perspective of scanner `1` are:
+
+```
+686,422,578
+605,423,415
+515,917,-361
+-336,658,858
+-476,619,847
+-460,603,-452
+729,430,532
+-322,571,750
+-355,545,-477
+413,935,-424
+-391,539,-444
+553,889,-390
+```
+
+Because of this, scanner `1` must be at `68,-1246,-43` (relative to scanner `0`).
+
+Scanner `4` overlaps with scanner `1`; the 12 beacons they both detect (relative to scanner
+`0`) are:
+
+`459,-707,401
+-739,-1745,668
+-485,-357,347
+432,-2009,850
+528,-643,409
+423,-701,434
+-345,-311,381
+408,-1815,803
+534,-1912,768
+-687,-1600,576
+-447,-329,318
+-635,-1737,486
+`
+
+So, scanner `4` is at `-20,-1133,1061` (relative to scanner `0`).
+
+Following this process, scanner `2` must be at `1105,-1205,1229` (relative to scanner `0`)
+and scanner `3` must be at `-92,-2380,-20` (relative to scanner `0`).
+
+The full list of beacons (relative to scanner `0`) is:
+
+```
+-892,524,684
+-876,649,763
+-838,591,734
+-789,900,-551
+-739,-1745,668
+-706,-3180,-659
+-697,-3072,-689
+-689,845,-530
+-687,-1600,576
+-661,-816,-575
+-654,-3158,-753
+-635,-1737,486
+-631,-672,1502
+-624,-1620,1868
+-620,-3212,371
+-618,-824,-621
+-612,-1695,1788
+-601,-1648,-643
+-584,868,-557
+-537,-823,-458
+-532,-1715,1894
+-518,-1681,-600
+-499,-1607,-770
+-485,-357,347
+-470,-3283,303
+-456,-621,1527
+-447,-329,318
+-430,-3130,366
+-413,-627,1469
+-345,-311,381
+-36,-1284,1171
+-27,-1108,-65
+7,-33,-71
+12,-2351,-103
+26,-1119,1091
+346,-2985,342
+366,-3059,397
+377,-2827,367
+390,-675,-793
+396,-1931,-563
+404,-588,-901
+408,-1815,803
+423,-701,434
+432,-2009,850
+443,580,662
+455,729,728
+456,-540,1869
+459,-707,401
+465,-695,1988
+474,580,667
+496,-1584,1900
+497,-1838,-617
+527,-524,1933
+528,-643,409
+534,-1912,768
+544,-627,-890
+553,345,-567
+564,392,-477
+568,-2007,-577
+605,-1665,1952
+612,-1593,1893
+630,319,-379
+686,-3108,-505
+776,-3184,-501
+846,-3110,-434
+1135,-1161,1235
+1243,-1093,1063
+1660,-552,429
+1693,-557,386
+1735,-437,1738
+1749,-1800,1813
+1772,-405,1572
+1776,-675,371
+1779,-442,1789
+1780,-1548,337
+1786,-1538,337
+1847,-1591,415
+1889,-1729,1762
+1994,-1805,1792
+```
+
+In total, there are `*79*` beacons.
+
+Assemble the full map of beacons. *How many beacons are there?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+Sometimes, it's a good idea to appreciate just how big the ocean is. Using the [Manhattan
+distance](https://en.wikipedia.org/wiki/Taxicab_geometry), how far apart do the scanners get?
+
+In the above example, scanners `2` (`1105,-1205,1229`) and `3` (`-92,-2380,-20`) are the
+largest Manhattan distance apart. In total, they are `1197 + 1175 + 1249 = *3621*` units
+apart.
+
+*What is the largest Manhattan distance between any two scanners?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 20: Trench Map](https://adventofcode.com/2021/day/20)
+With the scanners fully deployed, you turn their attention to mapping the floor of the
+ocean trench.
+
+When you get back the image from the scanners, it seems to just be random noise. Perhaps
+you can combine an image enhancement algorithm and the input image (your puzzle input) to
+clean it up a little.
+
+For example:
+
+```
+..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..##
+#..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###
+.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#.
+.#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#.....
+.#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#..
+...####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.....
+..##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
+#..#.
+#....
+##..#
+..#..
+..###
+```
+
+The first section is the *image enhancement algorithm*. It is normally given on a single
+line, but it has been wrapped to multiple lines in this example for legibility. The second
+section is the *input image*, a two-dimensional grid of *light pixels* (`#`) and *dark
+pixels* (`.`).
+
+The image enhancement algorithm describes how to enhance an image by *simultaneously*
+converting all pixels in the input image into an output image. Each pixel of the output
+image is determined by looking at a 3x3 square of pixels centered on the corresponding
+input image pixel. So, to determine the value of the pixel at (5,10) in the output image,
+nine pixels from the input image need to be considered: (4,9), (4,10), (4,11), (5,9),
+(5,10), (5,11), (6,9), (6,10), and (6,11). These nine input pixels are combined into a
+single binary number that is used as an index in the *image enhancement algorithm* string.
+
+For example, to determine the output pixel that corresponds to the very middle pixel of the
+input image, the nine pixels marked by `[...]` would need to be considered:
+
+```
+# . . # .
+#[. . .].
+#[# . .]#
+.[. # .].
+. . # # #
+```
+
+Starting from the top-left and reading across each row, these pixels are `...`, then `#..`,
+then `.#.`; combining these forms `...#...#.`. By turning dark pixels (`.`) into `0` and
+light pixels (`#`) into `1`, the binary number `000100010` can be formed, which is `34` in
+decimal.
+
+The image enhancement algorithm string is exactly 512 characters long, enough to match
+every possible 9-bit binary number. The first few characters of the string (numbered
+starting from zero) are as follows:
+
+```
+0         10        20        30  *34*    40        50        60        70
+|         |         |         |   *|*     |         |         |         |
+..#.#..#####.#.#.#.###.##.....###.*#*#.#..###.####..#####..#....#..#..##..##
+```
+
+In the middle of this first group of characters, the character at index 34 can be found:
+`#`. So, the output pixel in the center of the output image should be `#`, a *light pixel*.
+
+This process can then be repeated to calculate every pixel of the output image.
+
+Through advances in imaging technology, the images being operated on here are *infinite* in
+size. *Every* pixel of the infinite output image needs to be calculated exactly based on
+the relevant pixels of the input image. The small input image you have is only a small
+region of the actual infinite input image; the rest of the input image consists of dark
+pixels (`.`). For the purposes of the example, to save on space, only a portion of the
+infinite-sized input and output images will be shown.
+
+The starting input image, therefore, looks something like this, with more dark pixels (`.`)
+extending forever in every direction not shown here:
+
+```
+...............
+...............
+...............
+...............
+...............
+.....#..#......
+.....#.........
+.....##..#.....
+.......#.......
+.......###.....
+...............
+...............
+...............
+...............
+...............
+```
+
+By applying the image enhancement algorithm to every pixel simultaneously, the following
+output image can be obtained:
+
+```
+...............
+...............
+...............
+...............
+.....##.##.....
+....#..#.#.....
+....##.#..#....
+....####..#....
+.....#..##.....
+......##..#....
+.......#.#.....
+...............
+...............
+...............
+...............
+```
+
+Through further advances in imaging technology, the above output image can also be used as
+an input image! This allows it to be enhanced *a second time*:
+
+```
+...............
+...............
+...............
+..........#....
+....#..#.#.....
+...#.#...###...
+...#...##.#....
+...#.....#.#...
+....#.#####....
+.....#.#####...
+......##.##....
+.......###.....
+...............
+...............
+...............
+```
+
+Truly incredible - now the small details are really starting to come through. After
+enhancing the original input image twice, `*35*` pixels are lit.
+
+Start with the original input image and apply the image enhancement algorithm twice, being
+careful to account for the infinite size of the images. *How many pixels are lit in the
+resulting image?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+You still can't quite make out the details in the image. Maybe you just didn't
+[enhance](https://en.wikipedia.org/wiki/Kernel_\(image_processing\))
+it enough.
+
+If you enhance the starting input image in the above example a total of *50* times,
+`*3351*` pixels are lit in the final output image.
+
+Start again with the original input image and apply the image enhancement algorithm 50
+times. *How many pixels are lit in the resulting image?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 21: Dirac Dice](https://adventofcode.com/2021/day/21)
+There's not much to do as you slowly descend to the bottom of the ocean. The submarine
+computer challenges you to a nice game of *Dirac Dice*.
+
+This game consists of a single [die](https://en.wikipedia.org/wiki/Dice),
+two [pawns](https://en.wikipedia.org/wiki/Glossary_of_board_games#piece),
+and a game board with a circular track containing ten spaces marked `1` through
+`10` clockwise. Each player's *starting space* is chosen randomly (your puzzle input).
+Player 1 goes first.
+
+Players take turns moving. On each player's turn, the player rolls the die *three times*
+and adds up the results. Then, the player moves their pawn that many times *forward* around
+the track (that is, moving clockwise on spaces in order of increasing value, wrapping back
+around to `1` after `10`). So, if a player is on space `7` and they roll `2`, `2`, and `1`,
+they would move forward 5 times, to spaces `8`, `9`, `10`, `1`, and finally stopping on
+`2`.
+
+After each player moves, they increase their *score* by the value of the space their pawn
+stopped on. Players' scores start at `0`. So, if the first player starts on space `7` and
+rolls a total of `5`, they would stop on space `2` and add `2` to their score (for a total
+score of `2`). The game immediately ends as a win for any player whose score reaches *at
+least `1000`*.
+
+Since the first game is a practice game, the submarine opens a compartment labeled
+*deterministic dice* and a 100-sided die falls out. This die always rolls `1` first, then
+`2`, then `3`, and so on up to `100`, after which it starts over at `1` again. Play using
+this die.
+
+For example, given these starting positions:
+
+```
+Player 1 starting position: 4
+Player 2 starting position: 8
+```
+
+This is how the game would go:
+
+* Player 1 rolls `1`+`2`+`3` and moves to space `10` for a total score of `10`.
+* Player 2 rolls `4`+`5`+`6` and moves to space `3` for a total score of `3`.
+* Player 1 rolls `7`+`8`+`9` and moves to space `4` for a total score of `14`.
+* Player 2 rolls `10`+`11`+`12` and moves to space `6` for a total score of `9`.
+* Player 1 rolls `13`+`14`+`15` and moves to space `6` for a total score of `20`.
+* Player 2 rolls `16`+`17`+`18` and moves to space `7` for a total score of `16`.
+* Player 1 rolls `19`+`20`+`21` and moves to space `6` for a total score of `26`.
+* Player 2 rolls `22`+`23`+`24` and moves to space `6` for a total score of `22`.
+
+...after many turns...
+
+* Player 2 rolls `82`+`83`+`84` and moves to space `6` for a total score of `742`.
+* Player 1 rolls `85`+`86`+`87` and moves to space `4` for a total score of `990`.
+* Player 2 rolls `88`+`89`+`90` and moves to space `3` for a total score of `745`.
+* Player 1 rolls `91`+`92`+`93` and moves to space `10` for a final score, `1000`.
+
+Since player 1 has at least `1000` points, player 1 wins and the game ends. At this point,
+the losing player had `745` points and the die had been rolled a total of `993` times; `745
+* 993 = *739785*`.
+
+Play a practice game using the deterministic 100-sided die. The moment either player wins,
+*what do you get if you multiply the score of the losing player by the number of times the
+die was rolled during the game?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+Now that you're warmed up, it's time to play the real game.
+
+A second compartment opens, this time labeled *Dirac dice*. Out of it falls a single
+three-sided die.
+
+As you experiment with the die, you feel a little strange. An informational brochure in the
+compartment explains that this is a *quantum die*: when you roll it, the universe *splits
+into multiple copies*, one copy for each possible outcome of the die. In this case, rolling
+the die always splits the universe into *three copies*: one where the outcome of the roll
+was `1`, one where it was `2`, and one where it was `3`.
+
+The game is played the same as before, although to prevent things from getting too far out
+of hand, the game now ends when either player's score reaches at least `*21*`.
+
+Using the same starting positions as in the example above, player 1 wins in
+`*444356092776315*` universes, while player 2 merely wins in `341960390180808` universes.
+
+Using your given starting positions, determine every possible outcome. *Find the player
+that wins in more universes; in how many universes does that player win?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 22: Reactor Reboot](https://adventofcode.com/2021/day/22)
+Operating at these extreme ocean depths has overloaded the submarine's reactor; it needs to
+be rebooted.
+
+The reactor core is made up of a large 3-dimensional grid made up entirely of cubes, one
+cube per integer 3-dimensional coordinate (`x,y,z`). Each cube can be either *on* or *off*;
+at the start of the reboot process, they are all *off*. (Could it be an old model of a
+reactor you've seen [before](https://adventofcode.com/2020/day/17)?)
+
+To reboot the reactor, you just need to set all of the cubes to either *on* or *off* by
+following a list of *reboot steps* (your puzzle input). Each step specifies a
+[cuboid](https://en.wikipedia.org/wiki/Cuboid)
+(the set of all cubes that have coordinates which fall within ranges for `x`, `y`, and `z`)
+and whether to turn all of the cubes in that cuboid *on* or *off*.
+
+For example, given these reboot steps:
+
+```
+on x=10..12,y=10..12,z=10..12
+on x=11..13,y=11..13,z=11..13
+off x=9..11,y=9..11,z=9..11
+on x=10..10,y=10..10,z=10..10
+```
+
+The first step (`on x=10..12,y=10..12,z=10..12`) turns *on* a 3x3x3 cuboid consisting of 27
+cubes:
+
+* `10,10,10`
+* `10,10,11`
+* `10,10,12`
+* `10,11,10`
+* `10,11,11`
+* `10,11,12`
+* `10,12,10`
+* `10,12,11`
+* `10,12,12`
+* `11,10,10`
+* `11,10,11`
+* `11,10,12`
+* `11,11,10`
+* `11,11,11`
+* `11,11,12`
+* `11,12,10`
+* `11,12,11`
+* `11,12,12`
+* `12,10,10`
+* `12,10,11`
+* `12,10,12`
+* `12,11,10`
+* `12,11,11`
+* `12,11,12`
+* `12,12,10`
+* `12,12,11`
+* `12,12,12`
+
+The second step (`on x=11..13,y=11..13,z=11..13`) turns *on* a 3x3x3 cuboid that overlaps
+with the first. As a result, only 19 additional cubes turn on; the rest are already on from
+the previous step:
+
+* `11,11,13`
+* `11,12,13`
+* `11,13,11`
+* `11,13,12`
+* `11,13,13`
+* `12,11,13`
+* `12,12,13`
+* `12,13,11`
+* `12,13,12`
+* `12,13,13`
+* `13,11,11`
+* `13,11,12`
+* `13,11,13`
+* `13,12,11`
+* `13,12,12`
+* `13,12,13`
+* `13,13,11`
+* `13,13,12`
+* `13,13,13`
+
+The third step (`off x=9..11,y=9..11,z=9..11`) turns *off* a 3x3x3 cuboid that overlaps
+partially with some cubes that are on, ultimately turning off 8 cubes:
+
+* `10,10,10`
+* `10,10,11`
+* `10,11,10`
+* `10,11,11`
+* `11,10,10`
+* `11,10,11`
+* `11,11,10`
+* `11,11,11`
+
+The final step (`on x=10..10,y=10..10,z=10..10`) turns *on* a single cube, `10,10,10`.
+After this last step, `*39*` cubes are *on*.
+
+The initialization procedure only uses cubes that have `x`, `y`, and `z` positions of at
+least `-50` and at most `50`. For now, ignore cubes outside this region.
+
+Here is a larger example:
+
+```
+on x=-20..26,y=-36..17,z=-47..7
+on x=-20..33,y=-21..23,z=-26..28
+on x=-22..28,y=-29..23,z=-38..16
+on x=-46..7,y=-6..46,z=-50..-1
+on x=-49..1,y=-3..46,z=-24..28
+on x=2..47,y=-22..22,z=-23..27
+on x=-27..23,y=-28..26,z=-21..29
+on x=-39..5,y=-6..47,z=-3..44
+on x=-30..21,y=-8..43,z=-13..34
+on x=-22..26,y=-27..20,z=-29..19
+off x=-48..-32,y=26..41,z=-47..-37
+on x=-12..35,y=6..50,z=-50..-2
+off x=-48..-32,y=-32..-16,z=-15..-5
+on x=-18..26,y=-33..15,z=-7..46
+off x=-40..-22,y=-38..-28,z=23..41
+on x=-16..35,y=-41..10,z=-47..6
+off x=-32..-23,y=11..30,z=-14..3
+on x=-49..-5,y=-3..45,z=-29..18
+off x=18..30,y=-20..-8,z=-3..13
+on x=-41..9,y=-7..43,z=-33..15
+on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
+on x=967..23432,y=45373..81175,z=27513..53682
+```
+
+The last two steps are fully outside the initialization procedure area; all other steps are
+fully within it. After executing these steps in the initialization procedure region,
+`*590784*` cubes are *on*.
+
+Execute the reboot steps. Afterward, considering only cubes in the region
+`x=-50..50,y=-50..50,z=-50..50`, *how many cubes are on?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+Now that the initialization procedure is complete, you can reboot the reactor.
+
+Starting with all cubes *off*, run all of the *reboot steps* for all cubes in the reactor.
+
+Consider the following reboot steps:
+
+```
+on x=-5..47,y=-31..22,z=-19..33
+on x=-44..5,y=-27..21,z=-14..35
+on x=-49..-1,y=-11..42,z=-10..38
+on x=-20..34,y=-40..6,z=-44..1
+off x=26..39,y=40..50,z=-2..11
+on x=-41..5,y=-41..6,z=-36..8
+off x=-43..-33,y=-45..-28,z=7..25
+on x=-33..15,y=-32..19,z=-34..11
+off x=35..47,y=-46..-34,z=-11..5
+on x=-14..36,y=-6..44,z=-16..29
+on x=-57795..-6158,y=29564..72030,z=20435..90618
+on x=36731..105352,y=-21140..28532,z=16094..90401
+on x=30999..107136,y=-53464..15513,z=8553..71215
+on x=13528..83982,y=-99403..-27377,z=-24141..23996
+on x=-72682..-12347,y=18159..111354,z=7391..80950
+on x=-1060..80757,y=-65301..-20884,z=-103788..-16709
+on x=-83015..-9461,y=-72160..-8347,z=-81239..-26856
+on x=-52752..22273,y=-49450..9096,z=54442..119054
+on x=-29982..40483,y=-108474..-28371,z=-24328..38471
+on x=-4958..62750,y=40422..118853,z=-7672..65583
+on x=55694..108686,y=-43367..46958,z=-26781..48729
+on x=-98497..-18186,y=-63569..3412,z=1232..88485
+on x=-726..56291,y=-62629..13224,z=18033..85226
+on x=-110886..-34664,y=-81338..-8658,z=8914..63723
+on x=-55829..24974,y=-16897..54165,z=-121762..-28058
+on x=-65152..-11147,y=22489..91432,z=-58782..1780
+on x=-120100..-32970,y=-46592..27473,z=-11695..61039
+on x=-18631..37533,y=-124565..-50804,z=-35667..28308
+on x=-57817..18248,y=49321..117703,z=5745..55881
+on x=14781..98692,y=-1341..70827,z=15753..70151
+on x=-34419..55919,y=-19626..40991,z=39015..114138
+on x=-60785..11593,y=-56135..2999,z=-95368..-26915
+on x=-32178..58085,y=17647..101866,z=-91405..-8878
+on x=-53655..12091,y=50097..105568,z=-75335..-4862
+on x=-111166..-40997,y=-71714..2688,z=5609..50954
+on x=-16602..70118,y=-98693..-44401,z=5197..76897
+on x=16383..101554,y=4615..83635,z=-44907..18747
+off x=-95822..-15171,y=-19987..48940,z=10804..104439
+on x=-89813..-14614,y=16069..88491,z=-3297..45228
+on x=41075..99376,y=-20427..49978,z=-52012..13762
+on x=-21330..50085,y=-17944..62733,z=-112280..-30197
+on x=-16478..35915,y=36008..118594,z=-7885..47086
+off x=-98156..-27851,y=-49952..43171,z=-99005..-8456
+off x=2032..69770,y=-71013..4824,z=7471..94418
+on x=43670..120875,y=-42068..12382,z=-24787..38892
+off x=37514..111226,y=-45862..25743,z=-16714..54663
+off x=25699..97951,y=-30668..59918,z=-15349..69697
+off x=-44271..17935,y=-9516..60759,z=49131..112598
+on x=-61695..-5813,y=40978..94975,z=8655..80240
+off x=-101086..-9439,y=-7088..67543,z=33935..83858
+off x=18020..114017,y=-48931..32606,z=21474..89843
+off x=-77139..10506,y=-89994..-18797,z=-80..59318
+off x=8476..79288,y=-75520..11602,z=-96624..-24783
+on x=-47488..-1262,y=24338..100707,z=16292..72967
+off x=-84341..13987,y=2429..92914,z=-90671..-1318
+off x=-37810..49457,y=-71013..-7894,z=-105357..-13188
+off x=-27365..46395,y=31009..98017,z=15428..76570
+off x=-70369..-16548,y=22648..78696,z=-1892..86821
+on x=-53470..21291,y=-120233..-33476,z=-44150..38147
+off x=-93533..-4276,y=-16170..68771,z=-104985..-24507
+```
+
+After running the above reboot steps, `*2758514936282235*` cubes are *on*. (Just for fun,
+`474140` of those are also in the initialization procedure region.)
+
+Starting again with all cubes *off*, execute all reboot steps. Afterward, considering all
+cubes, *how many cubes are on?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 23: Amphipod](https://adventofcode.com/2021/day/23)
+A group of [amphipods][1] notice your fancy submarine and flag you down. "With such an impressive
+shell," one amphipod says, "surely you can help us with a question that has stumped our best
+scientists."
+
+They go on to explain that a group of timid, stubborn amphipods live in a nearby burrow. Four
+types of amphipods live there: *Amber* (`A`), *Bronze* (`B`), *Copper* (`C`), and *Desert* (`D`).
+They live in a burrow that consists of a *hallway* and four *side rooms*. The side rooms are
+initially full of amphipods, and the hallway is initially empty.
+
+They give you a *diagram of the situation* (your puzzle input), including locations of each
+amphipod (`A`, `B`, `C`, or `D`, each of which is occupying an otherwise open space), walls
+(`#`), and open space (`.`).
+
+For example:
+
+```
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+```
+
+The amphipods would like a method to organize every amphipod into side rooms so that each side
+room contains one type of amphipod and the types are sorted `A`-`D` going left to right, like
+this:
+
+```
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #########
+```
+
+Amphipods can move up, down, left, or right so long as they are moving into an unoccupied open
+space. Each type of amphipod requires a different amount of *energy* to move one step: Amber
+amphipods require `1` energy per step, Bronze amphipods require `10` energy, Copper amphipods
+require `100`, and Desert ones require `1000`. The amphipods would like you to find a way to
+organize the amphipods that requires the *least total energy*.
+
+However, because they are timid and stubborn, the amphipods have some extra rules:
+
+* Amphipods will never *stop on the space immediately outside any room*. They can move into that
+  space so long as they immediately continue moving. (Specifically, this refers to the four open
+  spaces in the hallway that are directly above an amphipod starting position.)
+* Amphipods will never *move from the hallway into a room* unless that room is their destination
+  room *and* that room contains no amphipods which do not also have that room as their own
+  destination. If an amphipod's starting room is not its destination room, it can stay in that
+  room until it leaves the room. (For example, an Amber amphipod will not move from the hallway
+  into the right three rooms, and will only move into the leftmost room if that room is empty or
+  if it only contains other Amber amphipods.)
+* Once an amphipod stops moving in the hallway, *it will stay in that spot until it can move into
+  a room*. (That is, once any amphipod starts moving, any other amphipods currently in the
+  hallway are locked in place and will not move again until they can move fully into a room.)
+
+In the above example, the amphipods can be organized using a minimum of `*12521*` energy. One way
+to do this is shown below.
+
+Starting configuration:
+
+```
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+```
+
+One Bronze amphipod moves into the hallway, taking 4 steps and using `40` energy:
+
+```
+#############
+#...B.......#
+###B#C#.#D###
+  #A#D#C#A#
+  #########
+```
+
+The only Copper amphipod not in its side room moves there, taking 4 steps and using `400` energy:
+
+```
+#############
+#...B.......#
+###B#.#C#D###
+  #A#D#C#A#
+  #########
+```
+
+A Desert amphipod moves out of the way, taking 3 steps and using `3000` energy, and then the
+Bronze amphipod takes its place, taking 3 steps and using `30` energy:
+
+```#############
+#.....D.....#
+###B#.#C#D###
+  #A#B#C#A#
+  #########
+```
+
+The leftmost Bronze amphipod moves to its room using `40` energy:
+
+```
+#############
+#.....D.....#
+###.#B#C#D###
+  #A#B#C#A#
+  #########
+```
+
+Both amphipods in the rightmost room move into the hallway, using `2003` energy in total:
+
+```
+#############
+#.....D.D.A.#
+###.#B#C#.###
+  #A#B#C#.#
+  #########
+```
+
+Both Desert amphipods move into the rightmost room using `7000` energy:
+
+```
+#############
+#.........A.#
+###.#B#C#D###
+  #A#B#C#D#
+  #########
+```
+
+Finally, the last Amber amphipod moves into its room, using `8` energy:
+
+```
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #########
+```
+
+*What is the least energy required to organize the amphipods?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+As you prepare to give the amphipods your solution, you notice that the diagram they handed you
+was actually folded up. As you unfold it, you discover an extra part of the diagram.
+
+Between the first and second lines of text that contain amphipod starting positions, insert the
+following lines:
+
+```
+  #D#C#B#A#
+  #D#B#A#C#
+```
+
+So, the above example now becomes:
+
+```
+#############
+#...........#
+###B#C#B#D###
+  #D#C#B#A#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+```
+
+The amphipods still want to be organized into rooms similar to before:
+
+```
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+```
+
+In this updated example, the least energy required to organize these amphipods is `*44169*`:
+
+```
+#############
+#...........#
+###B#C#B#D###
+  #D#C#B#A#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+#############
+#..........D#
+###B#C#B#.###
+  #D#C#B#A#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+#############
+#A.........D#
+###B#C#B#.###
+  #D#C#B#.#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+#############
+#A........BD#
+###B#C#.#.###
+  #D#C#B#.#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+#############
+#A......B.BD#
+###B#C#.#.###
+  #D#C#.#.#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+#############
+#AA.....B.BD#
+###B#C#.#.###
+  #D#C#.#.#
+  #D#B#.#C#
+  #A#D#C#A#
+  #########
+
+#############
+#AA.....B.BD#
+###B#.#.#.###
+  #D#C#.#.#
+  #D#B#C#C#
+  #A#D#C#A#
+  #########
+
+#############
+#AA.....B.BD#
+###B#.#.#.###
+  #D#.#C#.#
+  #D#B#C#C#
+  #A#D#C#A#
+  #########
+
+#############
+#AA...B.B.BD#
+###B#.#.#.###
+  #D#.#C#.#
+  #D#.#C#C#
+  #A#D#C#A#
+  #########
+
+#############
+#AA.D.B.B.BD#
+###B#.#.#.###
+  #D#.#C#.#
+  #D#.#C#C#
+  #A#.#C#A#
+  #########
+
+#############
+#AA.D...B.BD#
+###B#.#.#.###
+  #D#.#C#.#
+  #D#.#C#C#
+  #A#B#C#A#
+  #########
+
+#############
+#AA.D.....BD#
+###B#.#.#.###
+  #D#.#C#.#
+  #D#B#C#C#
+  #A#B#C#A#
+  #########
+
+#############
+#AA.D......D#
+###B#.#.#.###
+  #D#B#C#.#
+  #D#B#C#C#
+  #A#B#C#A#
+  #########
+
+#############
+#AA.D......D#
+###B#.#C#.###
+  #D#B#C#.#
+  #D#B#C#.#
+  #A#B#C#A#
+  #########
+
+#############
+#AA.D.....AD#
+###B#.#C#.###
+  #D#B#C#.#
+  #D#B#C#.#
+  #A#B#C#.#
+  #########
+
+#############
+#AA.......AD#
+###B#.#C#.###
+  #D#B#C#.#
+  #D#B#C#.#
+  #A#B#C#D#
+  #########
+
+#############
+#AA.......AD#
+###.#B#C#.###
+  #D#B#C#.#
+  #D#B#C#.#
+  #A#B#C#D#
+  #########
+
+#############
+#AA.......AD#
+###.#B#C#.###
+  #.#B#C#.#
+  #D#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#AA.D.....AD#
+###.#B#C#.###
+  #.#B#C#.#
+  #.#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#A..D.....AD#
+###.#B#C#.###
+  #.#B#C#.#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#...D.....AD#
+###.#B#C#.###
+  #A#B#C#.#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#.........AD#
+###.#B#C#.###
+  #A#B#C#D#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#..........D#
+###A#B#C#.###
+  #A#B#C#D#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #A#B#C#D#
+  #A#B#C#D#
+#########
+```
+
+Using the initial configuration from the full diagram, *what is the least energy required to
+organize the amphipods?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 24: Arithmetic Logic Unit](https://adventofcode.com/2021/day/24)
+[Magic smoke](https://en.wikipedia.org/wiki/Magic_smoke) starts leaking from
+the submarine's [arithmetic logic unit](https://en.wikipedia.org/wiki/Arithmetic_logic_unit) (ALU).
+Without the ability to perform basic arithmetic and logic functions, the submarine can't produce cool
+patterns with its Christmas lights!
+
+It also can't navigate. Or run the oxygen system.
+
+Don't worry, though - you *probably* have enough oxygen left to give you enough time to build a new
+ALU.
+
+The ALU is a four-dimensional processing unit: it has integer variables `w`, `x`, `y`, and `z`. These
+variables all start with the value `0`. The ALU also supports *six instructions*:
+
+* `inp a` - Read an input value and write it to variable `a`.
+* `add a b` - Add the value of `a` to the value of `b`, then store the result in variable `a`.
+* `mul a b` - Multiply the value of `a` by the value of `b`, then store the result in variable `a`.
+* `div a b` - Divide the value of `a` by the value of `b`, truncate the result to an integer, then
+  store the result in variable `a`. (Here, "truncate" means to round the value toward zero.)
+* `mod a b` - Divide the value of `a` by the value of `b`, then store the *remainder* in variable `a`.
+  (This is also called the [modulo](https://en.wikipedia.org/wiki/Modulo_operation) operation.)
+* `eql a b` - If the value of `a` and `b` are equal, then store the value `1` in variable `a`.
+  Otherwise, store the value `0` in variable `a`.
+
+In all of these instructions, `a` and `b` are placeholders; `a` will always be the variable where the
+result of the operation is stored (one of `w`, `x`, `y`, or `z`), while `b` can be either a variable
+or a number. Numbers can be positive or negative, but will always be integers.
+
+The ALU has no *jump* instructions; in an ALU program, every instruction is run exactly once in order
+from top to bottom. The program halts after the last instruction has finished executing.
+
+(Program authors should be especially cautious; attempting to execute `div` with `b=0` or attempting
+to execute `mod` with `a<0` or `b<=0` will cause the program to crash and might even damage the ALU.
+These operations are never intended in any serious ALU program.)
+
+For example, here is an ALU program which takes an input number, negates it, and stores it in `x`:
+
+```
+inp x
+mul x -1
+```
+
+Here is an ALU program which takes two input numbers, then sets `z` to `1` if the second input number
+is three times larger than the first input number, or sets `z` to `0` otherwise:
+
+```
+inp z
+inp x
+mul z 3
+eql z x
+```
+
+Here is an ALU program which takes a non-negative integer as input, converts it into binary, and
+stores the lowest (1's) bit in `z`, the second-lowest (2's) bit in `y`, the third-lowest (4's) bit in
+`x`, and the fourth-lowest (8's) bit in `w`:
+
+```
+inp w
+add z w
+mod z 2
+div w 2
+add y w
+mod y 2
+div w 2
+add x w
+mod x 2
+div w 2
+mod w 2
+```
+
+Once you have built a replacement ALU, you can install it in the submarine, which will immediately
+resume what it was doing when the ALU failed: validating the submarine's *model number*. To do this,
+the ALU will run the MOdel Number Automatic Detector program (MONAD, your puzzle input).
+
+Submarine model numbers are always *fourteen-digit numbers* consisting only of digits `1` through `9`.
+The digit `0` *cannot* appear in a model number.
+
+When MONAD checks a hypothetical fourteen-digit model number, it uses fourteen separate `inp`
+instructions, each expecting a *single digit* of the model number in order of most to least
+significant. (So, to check the model number `13579246899999`, you would give `1` to the first `inp`
+instruction, `3` to the second `inp` instruction, `5` to the third `inp` instruction, and so on.) This
+means that when operating MONAD, each input instruction should only ever be given an integer value of
+at least `1` and at most `9`.
+
+Then, after MONAD has finished running all of its instructions, it will indicate that the model number
+was *valid* by leaving a `0` in variable `z`. However, if the model number was *invalid*, it will
+leave some other non-zero value in `z`.
+
+MONAD imposes additional, mysterious restrictions on model numbers, and legend says the last copy of
+the MONAD documentation was eaten by a [tanuki](https://en.wikipedia.org/wiki/Japanese_raccoon_dog).
+You'll need to *figure out what MONAD does* some
+other way.
+
+To enable as many submarine features as possible, find the largest valid fourteen-digit model number
+that contains no `0` digits. *What is the largest model number accepted by MONAD?*
+
+> Your puzzle answer was `TODO`.
+
+### Part Two
+
+As the submarine starts booting up things like the
+[Retro Encabulator](https://www.youtube.com/watch?v=RXJKdh1KZ0w), you realize that maybe you
+don't need all these submarine features after all.
+
+*What is the smallest model number accepted by MONAD?*
+
+> Your puzzle answer was `TODO`.
+
+## [Day 25: Sea Cucumber](https://adventofcode.com/2021/day/25)
+This is it: the bottom of the ocean trench, the last place the sleigh keys could be. Your
+submarine's experimental antenna *still isn't boosted enough* to detect the keys, but they *must*
+be here. All you need to do is *reach the seafloor* and find them.
+
+At least, you'd touch down on the seafloor if you could; unfortunately, it's completely covered
+by two large herds of [sea cucumbers](https://en.wikipedia.org/wiki/Sea_cucumber),
+and there isn't an open space large enough for your submarine.
+
+You suspect that the Elves must have done this before, because just then you discover the phone
+number of a deep-sea marine biologist on a handwritten note taped to the wall of the submarine's
+cockpit.
+
+"Sea cucumbers? Yeah, they're probably hunting for food. But don't worry, they're predictable
+critters: they move in perfectly straight lines, only moving forward when there's space to do so.
+They're actually quite polite!"
+
+You explain that you'd like to predict when you could land your submarine.
+
+"Oh that's easy, they'll eventually pile up and leave enough space for-- wait, did you say
+submarine? And the only place with that many sea cucumbers would be at the very bottom of the
+Mariana--" You hang up the phone.
+
+There are two herds of sea cucumbers sharing the same region; one always moves *east* (`>`),
+while the other always moves *south* (`v`). Each location can contain at most one sea cucumber;
+the remaining locations are *empty* (`.`). The submarine helpfully generates a map of the
+situation (your puzzle input). For example:
+
+```
+v...>>.vv>
+.vv>>.vv..
+>>.>v>...v
+>>v>>.>.v.
+v>v.vv.v..
+>.>>..v...
+.vv..>.>v.
+v.v..>>v.v
+....v..v.>
+```
+
+Every *step*, the sea cucumbers in the east-facing herd attempt to move forward one location,
+then the sea cucumbers in the south-facing herd attempt to move forward one location. When a herd
+moves forward, every sea cucumber in the herd first simultaneously considers whether there is a
+sea cucumber in the adjacent location it's facing (even another sea cucumber facing the same
+direction), and then every sea cucumber facing an empty location simultaneously moves into that
+location.
+
+So, in a situation like this:
+
+`...>>>>>...`
+
+After one step, only the rightmost sea cucumber would have moved:
+
+`...>>>>.>..`
+
+After the next step, two sea cucumbers move:
+
+`...>>>.>.>.`
+
+During a single step, the east-facing herd moves first, then the south-facing herd moves. So,
+given this situation:
+
+```
+..........
+.>v....v..
+.......>..
+..........
+```
+
+After a single step, of the sea cucumbers on the left, only the south-facing sea cucumber has
+moved (as it wasn't out of the way in time for the east-facing cucumber on the left to move), but
+both sea cucumbers on the right have moved (as the east-facing sea cucumber moved out of the way
+of the south-facing sea cucumber):
+
+```
+..........
+.>........
+..v....v>.
+..........
+```
+
+Due to *strong water currents* in the area, sea cucumbers that move off the right edge of the map
+appear on the left edge, and sea cucumbers that move off the bottom edge of the map appear on the
+top edge. Sea cucumbers always check whether their destination location is empty before moving,
+even if that destination is on the opposite side of the map:
+
+```
+Initial state:
+...>...
+.......
+......>
+v.....>
+......>
+.......
+..vvv..
+After 1 step:
+..vv>..
+.......
+>......
+v.....>
+>......
+.......
+....v..
+After 2 steps:
+....v>.
+..vv...
+.>.....
+......>
+v>.....
+.......
+.......
+After 3 steps:
+......>
+..v.v..
+..>v...
+>......
+..>....
+v......
+.......
+After 4 steps:
+>......
+..v....
+..>.v..
+.>.v...
+...>...
+.......
+v......
+```
+
+To find a safe place to land your submarine, the sea cucumbers need to stop moving. Again
+consider the first example:
+
+```
+Initial state:
+v...>>.vv>
+.vv>>.vv..
+>>.>v>...v
+>>v>>.>.v.
+v>v.vv.v..
+>.>>..v...
+.vv..>.>v.
+v.v..>>v.v
+....v..v.>
+After 1 step:
+....>.>v.>
+v.v>.>v.v.
+>v>>..>v..
+>>v>v>.>.v
+.>v.v...v.
+v>>.>vvv..
+..v...>>..
+vv...>>vv.
+>.v.v..v.v
+After 2 steps:
+>.v.v>>..v
+v.v.>>vv..
+>v>.>.>.v.
+>>v>v.>v>.
+.>..v....v
+.>v>>.v.v.
+v....v>v>.
+.vv..>>v..
+v>.....vv.
+After 3 steps:
+v>v.v>.>v.
+v...>>.v.v
+>vv>.>v>..
+>>v>v.>.v>
+..>....v..
+.>.>v>v..v
+..v..v>vv>
+v.v..>>v..
+.v>....v..
+After 4 steps:
+v>..v.>>..
+v.v.>.>.v.
+>vv.>>.v>v
+>>.>..v>.>
+..v>v...v.
+..>>.>vv..
+>.v.vv>v.v
+.....>>vv.
+vvv>...v..
+After 5 steps:
+vv>...>v>.
+v.v.v>.>v.
+>.v.>.>.>v
+>v>.>..v>>
+..v>v.v...
+..>.>>vvv.
+.>...v>v..
+..v.v>>v.v
+v.v.>...v.
+...
+After 10 steps:
+..>..>>vv.
+v.....>>.v
+..v.v>>>v>
+v>.>v.>>>.
+..v>v.vv.v
+.v.>>>.v..
+v.v..>v>..
+..v...>v.>
+.vv..v>vv.
+...
+After 20 steps:
+v>.....>>.
+>vv>.....v
+.>v>v.vv>>
+v>>>v.>v.>
+....vv>v..
+.v.>>>vvv.
+..v..>>vv.
+v.v...>>.v
+..v.....v>
+...
+After 30 steps:
+.vv.v..>>>
+v>...v...>
+>.v>.>vv.>
+>v>.>.>v.>
+.>..v.vv..
+..v>..>>v.
+....v>..>v
+v.v...>vv>
+v.v...>vvv
+...
+After 40 steps:
+>>v>v..v..
+..>>v..vv.
+..>>>v.>.v
+..>>>>vvv>
+v.....>...
+v.v...>v>>
+>vv.....v>
+.>v...v.>v
+vvv.v..v.>
+...
+After 50 steps:
+..>>v>vv.v
+..v.>>vv..
+v.>>v>>v..
+..>>>>>vv.
+vvv....>vv
+..v....>>>
+v>.......>
+.vv>....v>
+.>v.vv.v..
+...
+After 55 steps:
+..>>v>vv..
+..v.>>vv..
+..>>v>>vv.
+..>>>>>vv.
+v......>vv
+v>v....>>v
+vvv...>..>
+>vv.....>.
+.>v.vv.v..
+After 56 steps:
+..>>v>vv..
+..v.>>vv..
+..>>v>>vv.
+..>>>>>vv.
+v......>vv
+v>v....>>v
+vvv....>.>
+>vv......>
+.>v.vv.v..
+After 57 steps:
+..>>v>vv..
+..v.>>vv..
+..>>v>>vv.
+..>>>>>vv.
+v......>vv
+v>v....>>v
+vvv.....>>
+>vv......>
+.>v.vv.v..
+After 58 steps:
+..>>v>vv..
+..v.>>vv..
+..>>v>>vv.
+..>>>>>vv.
+v......>vv
+v>v....>>v
+vvv.....>>
+>vv......>
+.>v.vv.v..
+```
+
+In this example, the sea cucumbers stop moving after `*58*` steps.
+
+Find somewhere safe to land your submarine. *What is the first step on which no sea cucumbers
+move?*
+
+> Your puzzle answer was `TODO`.
